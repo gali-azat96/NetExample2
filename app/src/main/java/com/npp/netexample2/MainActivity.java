@@ -1,5 +1,6 @@
 package com.npp.netexample2;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.npp.netexample2.entity.WeatherAnswer;
+import com.npp.netexample2.weatherList.WeatherListActivity;
 
 import java.io.IOException;
 
@@ -38,37 +40,19 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn)
     public void onClick(){
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String city = editText.getText().toString();
-                Request request = new Request.Builder()
-                        .url("https://api.openweathermap.org/data/2.5/weather?q=" + city +"&appid=feb13a76462a1348fcacb20e91a6ab86")
-                        .build();
-                OkHttpClient client = new OkHttpClient();
-                try {
-                    final Response response = client.newCall(request).execute();
-                    String s  = response.body().string();
-                    final WeatherAnswer weatherAnswer = new Gson().fromJson(s, WeatherAnswer.class);
-                    textView.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setText(weatherAnswer.getMain().getTemp() + " ");
-                        }
-                    });
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-
+//        presenter.getWeather(editText.getText().toString());
+        Intent intent = new Intent(this, WeatherListActivity.class);
+        intent.putExtra("city", editText.getText().toString());
+        startActivity(intent);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         presenter = null;
+    }
+
+    public void showTemp(Double temp) {
+        textView.setText(temp + "");
     }
 }
